@@ -8,7 +8,15 @@ Initial Thoughts:
 Let's begin this discussion with the understanding that amino acids are the building blocks of proteins. One of the most fundamental laws of biology is that structure determines function. At the molecular and cellular level, the structure of proteins dictates their capabilities. Let's takes hemoglobin for example. Hemoglobin is an oxygen distributing protein complex that is essential to human life. Hemoglobin's ability to distribute oxygen is thanks to its structure. Its structure a consequence of the arrangement of amino acids that were used to build the protein. In this project we are zooming into protein structure and looking at what biologists call the secondary structure. Secondary structures are constructed with regards to how local amino acids interact with each other. A few examples include helical, coil, and sheet like structures. Together these seconadry structures come together to build increasing levels of protein structre that eventually lead to the contruction of the whole protein. 
 
 ##Example Code
-def model(self, inut):
+'''python
+#Loading model
+from transformers import AutoModelForTokenClassification
+
+model = AutoModelForTokenClassification.from_pretrained(
+    "Rostlab/prot_bert",
+    num_labels=len(unique_characters),
+)
+'''
 
 This problem requires us to understand the intricate relationships between individual amino acid residues and how they impact secondary structure. We are looking for a pattern within the residues that gives us an improved chance of predicting the secondary structure. A piece of software that is good at comprehending patterns and using that understanding to make predictions would suit this task perfectly. Thankfully neural networks excel at tasks like this. A typical software program gives the computer a finite set of instructions to meet a goal. To predict the behavior of complex systems like protein folding it more effecient to use a neural network which has to flexibilty of understanding systems with many variables. 
 
