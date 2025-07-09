@@ -7,17 +7,6 @@ Initial Thoughts:
 
 Let's begin this discussion with the understanding that amino acids are the building blocks of proteins. One of the most fundamental laws of biology is that structure determines function. At the molecular and cellular level, the structure of proteins dictates their capabilities. Let's takes hemoglobin for example. Hemoglobin is an oxygen distributing protein complex that is essential to human life. Hemoglobin's ability to distribute oxygen is thanks to its structure. Its structure a consequence of the arrangement of amino acids that were used to build the protein. In this project we are zooming into protein structure and looking at what biologists call the secondary structure. Secondary structures are constructed with regards to how local amino acids interact with each other. A few examples include helical, coil, and sheet like structures. Together these seconadry structures come together to build increasing levels of protein structre that eventually lead to the contruction of the whole protein. 
 
-##Example Code
-```python
-#Loading model
-from transformers import AutoModelForTokenClassification
-
-model = AutoModelForTokenClassification.from_pretrained(
-    "Rostlab/prot_bert",
-    num_labels=len(unique_characters),
-)
-```
-
 This problem requires us to understand the intricate relationships between individual amino acid residues and how they impact secondary structure. We are looking for a pattern within the residues that gives us an improved chance of predicting the secondary structure. A piece of software that is good at comprehending patterns and using that understanding to make predictions would suit this task perfectly. Thankfully neural networks excel at tasks like this. A typical software program gives the computer a finite set of instructions to meet a goal. To predict the behavior of complex systems like protein folding it more effecient to use a neural network which has to flexibilty of understanding systems with many variables. 
 
 It is easiet to think of a neural network as a mathamatical function. The function has weights and bias (called parameters) that can be thought of as coefficients of the input variable. For example, the 5 in this function is a parameter: f(x) = 5x + 2. Adjusting the parameters allows you to manipulate what the outputs are. In our problem, we want to input a sequence of residues and we expect the function, or neural network (NN), to output to correct secondary structures. In reality, the input sequences and structures are transformed into numerical values call matrices so that mathimatical operations can take palce on them. To keep things simple we won't go into the matrices yet. Going back to our function simplification, our goal is to find the coefficent (parameter) that gives us the closest output to our expected value. Let's go over the steps a neural network takes to achive this. 
