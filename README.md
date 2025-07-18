@@ -35,6 +35,8 @@ To create our own dataset there are two tools we will need to use. The first is 
 
 The second dataset option is using a curated one off Kaggle. Here is the dataset we are going to use as the standard in our project: Protein-Secondary-Structure. From here you will need to download the file and edit the file so that the data frame only contains the columns concerning amino acid sequences and secondary structure sequences.
 
+![My Diagram](ChatGPT Image Jul 18, 2025, 11_48_30 AM.png)
+
 **Feeding The Transformer**
 
 Transformers require our inputs to be in a specific format in order to perform operations like self-attention. To understand the best format for our data, it is important to remember that all transformer operations are complex mathematical functions. Previously we have imagined that the transformer is fed an alphabetical sequence that represents amino acids and outputs a different alphabetical sequence that represents secondary structure. During training the transformer makes an initial prediction. The difference between its prediction and the expected value is called ‘loss’. Given enough repetitions in training, the transformer will minimize the loss and the difference between the prediction and the expected value will be negligible. In our imagination we can visualize the difference being the number of residues in the sequence wrongly labeled. In actuality, there is a real number that represents the loss. So how do we transform our alphabetical sequences into a format that allows the transformer to perform operations like self-attention and loss?
