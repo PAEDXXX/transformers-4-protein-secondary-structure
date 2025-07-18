@@ -7,7 +7,7 @@ Given an amino acid sequence, find a way to reliably predict the corresponding s
 
 Let's begin this discussion with the understanding that amino acids are the building blocks of proteins. One of the most fundamental laws of biology is that structure determines function. At the molecular and cellular level, the structure of proteins dictates their capabilities. Let's take hemoglobin for example. Hemoglobin is an oxygen distributing protein complex that is essential to human life. Hemoglobin's ability to distribute oxygen is thanks to its structure. Its structure is a consequence of the arrangement of amino acids that were used to build the protein. In this project we are zooming into protein structure and looking at what biologists call the secondary structure. Secondary structures are constructed with regards to how local amino acids interact with each other. A few examples include helical, coil, and sheet like structures. Together these secondary structures come together to build increasing levels of protein structure that eventually lead to the construction of the whole protein.
 
-img-p-ss.png 
+![My Diagram](img-p-ss.png)
 
 **Why Transformers?**
 
