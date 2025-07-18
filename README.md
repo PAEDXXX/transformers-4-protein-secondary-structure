@@ -46,7 +46,8 @@ Review: take our sequence of letters, convert them into single/unique numbers, a
 <img src="img-token.png" alt="My Diagram" width="35%"/>
 
 **Application**
-When it comes time to use the transformer we can do so using python libraries like Hugging Face. Hugging Face is a library that contains a vast set of options when it comes to finding a specific model that meets your needs. We will access this library to import our transformer of choice. Another python library we will be accessing is PyTorch. Where Hugging Face provides us with models to use, PyTorch gives us the framework and tools we need to interact with the models.
+
+When it comes time to use the transformer we can do so by accessing python libraries like Hugging Face. Hugging Face is a library that contains a vast set of options when it comes to finding a specific model that meets your needs. We will access this library to import our transformer of choice. Another python library we will be accessing is PyTorch. Where Hugging Face provides us with models to use, PyTorch gives us the framework and tools we need to interact with the models.
 
 **Preprocessing**
 
@@ -75,7 +76,7 @@ newer_df = newer_df.reset_index(drop = True)
 newer_df.to_parquet('/content/drive/MyDrive/kaggleDS')
 ```
 
-The next step is tokenization or mapping our characters to numbers. To find all unique characters that may appear in our amino acid sequences, we concatenate all sequences and remove repeat characters. This leaves us with a list of characters representing our amino acid alphabet. From there we create a look up table that maps each letter in the alphabet to a unique number.
+The next step is tokenization or mapping our characters to numbers. To find all unique characters that may appear in our amino acid sequences, we concatenate all sequences and remove repeat characters. This leaves us with a list of characters representing our amino acid alphabet (or all characters that may appear in a sequence). From there we create a look up table that maps each letter in the alphabet to a unique number.
 ```python
 #Loading curated Kaggle dataset
 drive.mount('/content/drive')
@@ -91,14 +92,14 @@ character_to_indx = {character : indx for indx, character in enumerate(unique_le
 character_to_indx
 ```
 
-The last step in tokenization is creating a pad token. If we want to train our model on multiple sequences at a time (to speed up the training process), we need to make sure that the sequences we are inputing are the same length. Padding applies a token on the end of the shorter sequences to match the length of the longest sequence during that training cycle. When transformers operate on the sequences they like symetry so leveling all sequences being inputed is vital. 
+There is one more token that we need to create. When we train transformers it is usually in batches of sequence (to speed up training process). This means we input multiple sequences at a time. In order for the transformer to work with batches, the sequences need to all be the same length. To achieve this we add a 'pad token' to the end of the shorter sequences to match the length of the longest sequence in the batch. The transformer knows that this is just a filler and will not take it into account.  
 ```python
 #Creating a token just for padding
 character_to_indx['<PAD>'] = len(character_to_indx)
 pad_token = character_to_indx['<PAD>']
 ```
 
-In this cell we are applying our mappings to the dataset in order to transformer them into lists of numbers. This cell also includes the same process for the secondary structure sequences.
+In this cell we are applying our tokenization maps to the dataset, resulting in all our sequences of characters being turned into sequences of numbers (ready for the transformer). When the transformer makes a prediction on what the secondary structure is, it does this by outputting a list of number. These number represent a secondary structure sequence. It will then reference the difference between the predicted number and expected number to improve itself. This means that we also need to represent the secondary structure sequences as numbers. This cell also includes the tokenization of the secondary structure sequences.
 ```python
 #Applying encoder to sequences
 df['encoded_aa_seqs'] = df['seq'].apply(lambda seq: [character_to_indx[character] for character in seq])
