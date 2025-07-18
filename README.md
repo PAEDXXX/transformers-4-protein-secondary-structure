@@ -35,6 +35,7 @@ To create our own dataset there are two tools we will need to use. The first is 
 
 The second dataset option is using a curated one off Kaggle. Here is the dataset we are going to use as the standard in our project: Protein-Secondary-Structure. From here you will need to download the file and edit the file so that the data frame only contains the columns concerning amino acid sequences and secondary structure sequences.
 
+<img src="Cimg-token.png" alt="My Diagram" width="50%"/>
 ![My Diagram](img-token.png)
 
 **Feeding The Transformer**
