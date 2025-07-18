@@ -35,7 +35,7 @@ To create our own dataset there are two tools we will need to use. The first is 
 
 The second dataset option is using a curated one off Kaggle. Here is the dataset we are going to use as the standard in our project: Protein-Secondary-Structure. From here you will need to download the file and edit the file so that the data frame only contains the columns concerning amino acid sequences and secondary structure sequences.
 
-![My Diagram]([ChatGPT-Image-Jul-18,-2025,-11_48_30 AM.png](https://github.com/PAEDXXX/transformers-4-protein-secondary-structure/blob/main/ChatGPT%20Image%20Jul%2018%2C%202025%2C%2011_48_30%20AM.png))
+![Alt Text](images/my_image.png)
 
 **Feeding The Transformer**
 
