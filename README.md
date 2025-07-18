@@ -69,6 +69,44 @@ newer_df = newer_df.reset_index(drop = True)
 newer_df.to_parquet('/content/drive/MyDrive/kaggleDS')
 ```
 
+The following cells will be taking our sequences and pushing them through two layers of mapping. From letters to numbers and then from numbers to matrices. 
+```python
+#Loading curated Kaggle dataset
+drive.mount('/content/drive')
+file_path = '/content/drive/MyDrive/kaggleDS'
+df = pd.read_parquet(file_path)
+df
+
+#Finding all unique letters in aa seq
+unique_letters = set(''.join(df['seq'].to_list()))
+unique_letters = '*ACDEFGHIKLMNPQRSTVWY'
+
+#Creating dictionary to integer encode amino acids
+character_to_indx = {character : indx for indx, character in enumerate(unique_letters)}
+character_to_indx
+
+#Creating a token just for padding
+character_to_indx['<PAD>'] = len(character_to_indx)
+pad_token = character_to_indx['<PAD>']
+
+#Applying encoder to sequences
+df['encoded_aa_seqs'] = df['seq'].apply(lambda seq: [character_to_indx[character] for character in seq])
+
+#Finding all unique chacters in ss seq
+unique_characters = set(''.join(df['sst8'].to_list()))
+unique_characters = 'BCEGHIST'
+
+#Creating dictionary to encode secondary structures
+letter_to_indx = {character: indx for indx, character in enumerate(unique_characters)}
+letter_to_indx
+
+#Applying dictionary to ss seqs
+df['encoded_ss_seqs'] = df['sst8'].apply(lambda seq: [letter_to_indx[letter] for letter in seq])
+
+#Saving changes to drive
+new_df = df
+new_df.to_parquet('/content/drive/MyDrive/kaggleDS')
+```
 
 
 
