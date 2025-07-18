@@ -41,11 +41,11 @@ Transformers require our inputs to be in a specific format in order to perform o
 
 We prepare our data by mapping each possible character in our amino acid vocabulary to a number. There are 20 different amino acids that are commonly found in proteins. That means our vocabulary includes 20 unique characters, each representing an amino acid and each mapped to a unique number. Now our sequences are in a numerical format that programs can understand. In order for our transformer to understand and operate on them there is one last step called embedding. We map each number to a unique set of numbers (matrix). Remember how I said that self-attention is able to determine the context of a single residue with respect to its surroundings. It is able to represent that context by changing the numbers in that residue’s matrix. That means that the more numbers in the matrix the more detailed a residue’s context can be. Thinking of it like the resolution of a picture. The more pixels (higher resolution) means increased detail. This increase in the detail of the residue’s context is the entire reason why we represent each amino acid with a group of numbers instead of just one.
 
-Let’s review the process. We take our sequence of letters, convert them into single/unique numbers, and then map these numbers to matrices. This process is done for the amino acid alphabet as well as the secondary structure alphabet.
+Let’s review the process. We take our sequence of letters, convert them into single/unique numbers, and then map these numbers to matrices. This process is done for the amino acid alphabet as well as the secondary structure alphabet. The following cells wil display how to process our data before training and evaluating the model. 
 
 **Preprocessing**
 
-It's time we start looking at how to actually do this in practice. I will be performing the rest of this within Google Colab. Let's begin with processing our data. At this point you should have your dataset downloaded to you computer or google drive. From there we are going to filter our dataset to sequences that are between 50-500 residues in order to help to model aclimate itself to a less varied dataset.
+The following cell imports the file containing our dataset. The orginal file contains a dataset with more columbs then needed so we will be selecting and keeping the columbs containing the protein IDs, amino acid sequences, and corresponding secondary structure sequences.
 ```python
 # Loading Kaggle SS file
 import pandas as pd
@@ -54,12 +54,13 @@ from google.colab import drive
 drive.mount('/content/drive')
 file_path = '/content/drive/MyDrive/2018-06-06-pdb-intersect-pisces.csv.zip'
 df = pd.read_csv(file_path)
-df
 
 #Filtering for 3 columns
 new_df = df[['pdb_id','seq','sst8']]
 new_df
-
+```
+The next cell filters our dataset so that it only contains sequences between 50-1000 residues. Limiting the variation in our dataset will make it easier for the transformer to handle the sequences.
+```python
 #Filtering for seq lengths inbetween 50-500
 newer_df = new_df[new_df['seq'].str.len().between(51,999)]
 newer_df
@@ -69,13 +70,12 @@ newer_df = newer_df.reset_index(drop = True)
 newer_df.to_parquet('/content/drive/MyDrive/kaggleDS')
 ```
 
-The following cells will be taking our sequences and pushing them through two layers of mapping. From letters to numbers and then from numbers to matrices. 
+The next step is tokenization or mapping our characters to numbers. To find all unique characters that may appear in our amino acid sequences, we concatenate all sequences and remove repeat characters. This leaves us with a list of characters representing our amino acid alphabet. From there we create a look up table that maps each letter in the alphabet to a unique number.
 ```python
 #Loading curated Kaggle dataset
 drive.mount('/content/drive')
 file_path = '/content/drive/MyDrive/kaggleDS'
 df = pd.read_parquet(file_path)
-df
 
 #Finding all unique letters in aa seq
 unique_letters = set(''.join(df['seq'].to_list()))
@@ -84,11 +84,17 @@ unique_letters = '*ACDEFGHIKLMNPQRSTVWY'
 #Creating dictionary to integer encode amino acids
 character_to_indx = {character : indx for indx, character in enumerate(unique_letters)}
 character_to_indx
+```
 
+The last step in tokenization is creating a pad token. If we want to train our model on multiple sequences at a time (to speed up the training process), we need to make sure that the sequences we are inputing are the same length. Padding applies a token on the end of the shorter sequences to match the length of the longest sequence during that training cycle. When transformers operate on the sequences they like symetry so leveling all sequences being inputed is vital. 
+```python
 #Creating a token just for padding
 character_to_indx['<PAD>'] = len(character_to_indx)
 pad_token = character_to_indx['<PAD>']
+```
 
+In this cell we are applying our mappings to the dataset in order to transformer them into lists of numbers. This cell also includes the same process for the secondary structure sequences.
+```python
 #Applying encoder to sequences
 df['encoded_aa_seqs'] = df['seq'].apply(lambda seq: [character_to_indx[character] for character in seq])
 
