@@ -43,5 +43,29 @@ We prepare our data by mapping each possible character in our amino acid vocabul
 
 Let’s review the process. We take our sequence of letters, convert them into single/unique numbers, and then map these numbers to matrices. This process is done for the amino acid alphabet as well as the secondary structure alphabet.
 
+It's time we start looking at how to actually do this in practice. I will be performing the rest of this within Google Colab. Let's begin with processing our data. At this point you should have you dataset downloaded to you computer or google drive. From there we are going to filter our dataset to sequences that are between 50-500 residues in order to keep a normalized set.
+```markdown
+# Loading Kaggle SS file
+import pandas as pd
+from google.colab import drive
+
+drive.mount('/content/drive')
+file_path = '/content/drive/MyDrive/2018-06-06-pdb-intersect-pisces.csv.zip'
+df = pd.read_csv(file_path)
+df
+
+#Filtering for 3 columns
+new_df = df[['pdb_id','seq','sst8']]
+new_df
+
+#Filtering for seq lengths inbetween 50-500
+newer_df = new_df[new_df['seq'].str.len().between(51,999)]
+newer_df
+newer_df = newer_df.reset_index(drop = True)
+
+#Saving to Drive
+newer_df.to_parquet('/content/drive/MyDrive/kaggleDS')
+```
+
 
 
