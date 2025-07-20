@@ -168,6 +168,7 @@ def collate_fn(batch):
 
   return {'input_ids' : padded_input_seqs,
           'labels' : padded_input_labels}
+```
 
 In practice we are actually going to use two DataLoaders. One for training and another for testing. When evaluating the efficacy of a transformer you want to test it on sequences that are different from the training data. While they are expected to have similar pattern, the transformer will not be testing on a sequence that it has already seen. This ensures that it has actually gained some understanding and can apply it. This is why we split our dataset into training and testing data. In this scenario we will split our dataset into 90 percent training and 10 percent testing. Lastly we will turn each dataset into indivdual classes and then apply the DataLoader upon them.
 ```python
