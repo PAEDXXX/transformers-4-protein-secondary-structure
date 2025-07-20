@@ -99,7 +99,7 @@ character_to_indx['<PAD>'] = len(character_to_indx)
 pad_token = character_to_indx['<PAD>']
 ```
 
-In this cell we are applying our tokenization maps to the dataset, resulting in all our sequences of characters being turned into sequences of numbers (ready for the transformer). When the transformer makes a prediction on what the secondary structure is, it does this by outputting a list of number. These number represent a secondary structure sequence. It will then reference the difference between the predicted number and expected number to improve itself. This means that we also need to represent the secondary structure sequences as numbers. This cell also includes the tokenization of the secondary structure sequences.
+In this cell we are applying our tokenization maps to the dataset, turning our sequences of letters into sequences of numbers (ready for the transformer). When the transformer makes a secondary structure prediction, it does so by representing the structures with a list of numbers. These numbers represent the protein's secondary structures. From there it will use the difference between the expected and predicted numbers to improve itself. With that in mind, we need to represent the secondary structure sequences as numbers. This cell also includes the tokenization of the secondary structure sequences.
 ```python
 #Applying encoder to sequences
 df['encoded_aa_seqs'] = df['seq'].apply(lambda seq: [character_to_indx[character] for character in seq])
@@ -120,6 +120,68 @@ new_df = df
 new_df.to_parquet('/content/drive/MyDrive/kaggleDS')
 ```
 
+Now that our dataset has been narrowed down and prepared for the transformer we need to discuss how to feed it in. As I mentioned before, PyTorch is a python library that provides us with the functions and tools we need to interact with and manipulate deep learning models. Pytorch has a tool called the DataLoader which enables us to easily feed the transformer. Imagine the dataset as a steak. Through tokenization we cooked and prepared it. DataLoader cuts the steak into pieces or batches, and feeds the transformer. 
+
+While DataLoader is a useful and effecient tool it typically needs to be used on a dataset that has already be turned into a python class. By turning our dataset into a class, we are telling DataLoader exactly what to expect and how to effeciently handle our data. One attribute we give our class is dataset length which tells DataLoader how many sequences it will need to handle. 
+```python
+#Imports
+import pandas as pd
+from google.colab import drive
+import torch
+import torch.utils.data
+from torch.utils.data import DataLoader, Dataset
+
+
+#Dataset
+drive.mount('/content/drive')
+file_path = '/content/drive/MyDrive/kaggleDS'
+df = pd.read_parquet(file_path)
+
+class ProteinDataset(Dataset):# Create class for my dataset so it can be iterated over and retrieved by PyTorch's DataLoader
+  def __init__(self, dataframe): #initialize my data
+    self.data = df
+
+  def __len__(self): # get number of values or sequences that way DataLoader knows what it is handling
+    return len(self.data)
+
+  def __getitem__(self, indx): # get each sequence
+    aa = self.data.iloc[indx]['encoded_aa_seqs']
+    ss = self.data.iloc[indx]['encoded_ss_seqs']
+
+    aa_seq = torch.LongTensor(aa) # turn sequences into tensors
+    ss_seq = torch.LongTensor(ss)
+
+    return aa_seq, ss_seq
+```
+
+Another task that DataLoader handles for us is padding. When it turns our dataset into batches it will make sure each batch is symetrical by padding the shorter sequences with the pad token we created earlier. In this cell we are specifying how and what DataLoader should accomplish the padding with. We specify the padding tokens for the amino acid sequences and secondary sequences. 
+```python
+#Padding
+from torch.nn.utils.rnn import pad_sequence
+
+def collate_fn(batch):
+  input_seqs = [item[0] for item in batch] #specify each seq in the batch
+  input_labels= [item[1] for item in batch]
+
+  padded_input_seqs = pad_sequence(input_seqs, batch_first=True, padding_value=pad_token)
+  padded_input_labels = pad_sequence(input_labels, batch_first=True, padding_value=-100)
+
+  return {'input_ids' : padded_input_seqs,
+          'labels' : padded_input_labels}
+
+In practice we are actually going to use two DataLoaders. One for training and another for testing. When evaluating the efficacy of a transformer you want to test it on sequences that are different from the training data. While they are expected to have similar pattern, the transformer will not be testing on a sequence that it has already seen. This ensures that it has actually gained some understanding and can apply it. This is why we split our dataset into training and testing data. In this scenario we will split our dataset into 90 percent training and 10 percent testing. Lastly we will turn each dataset into indivdual classes and then apply the DataLoader upon them.
+```python
+#Split into training and testing data
+from sklearn.model_selection import train_test_split
+
+training_ds, testing_ds = train_test_split(df, test_size=0.1) #split dataset up
+
+training_ds = ProteinDataset(training_ds) #run it thru the protein dataset class to ready it for dataloader
+testing_ds = ProteinDataset(testing_ds)
+
+training_loader = DataLoader(dataset=training_ds, batch_size=2, collate_fn=collate_fn, shuffle=True)
+testing_loader = DataLoader(dataset=testing_ds, batch_size=2, collate_fn=collate_fn, shuffle=True)
+```
 
 
 
