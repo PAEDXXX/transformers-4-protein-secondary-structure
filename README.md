@@ -184,5 +184,114 @@ training_loader = DataLoader(dataset=training_ds, batch_size=2, collate_fn=colla
 testing_loader = DataLoader(dataset=testing_ds, batch_size=2, collate_fn=collate_fn, shuffle=True)
 ```
 
+The next step is importing our transformer of choice and writing the training loop. Later on we will go over why we chose this specific model. 
+```python
+#Loading model
+from transformers import AutoModelForTokenClassification
 
+model = AutoModelForTokenClassification.from_pretrained(
+    "Rostlab/prot_bert",
+    num_labels=len(unique_characters),
+)
+```
+
+We are going to break down the training loop into four simple steps. Many deeplearning models, whether they be simple neural netowrks or transformer, will go through some form of this training loop. 
+1. Foward pass: The training data is pushed throught the transformer and the transformer outputs a prediction based upon its initial settings.
+2. Calculating loss: The transformer finds the differnece between the initial prediction and the expected output.
+3. Back propagation: The loss is used to find which settings and how much the settings need to be adjusted so that the next output is closer to the expected value and the loss decreases.
+4. Gardient Descent: These findings as applied to the transformer and it is now updated and ready for the next batch.
+One training loop is finished once all the batches in our dataset have been run through the transformer at least once. After each epoch the transformer will be evaluated using the testing dataset we created before. As the number of epochs progresses, we should see the training loss decrease and the evaluation accuracy (or test score) increase. This will ensure us that the transformer is being able to learn using the dataset and making increasingly accurate predictions.
+```python
+#Training Loop
+
+#Imports
+import torch
+from torch.optim import AdamW
+from tqdm import tqdm
+import os # Import the os module
+
+
+#Setup
+model = model #specifies model as our ProtBERT transformer
+device = device #specifies the device we want to run our computation one
+model.to(device) #putting our model on that device (GPU)
+PATH = '/content/drive/MyDrive/ProtBERT_for_ss/checkpoint.pt'
+
+# Optimizer
+optimizer = AdamW(model.parameters(), lr=2e-5) #specifies the optimzer we want which will perform gradient descent
+
+# Training Loop
+def train(model, training_loader, testing_loader, optimizer, start_epoch=0, epochs = 3):
+  model.train() #training mode enables dropout: randomly disables certain neurons to avoid overfitting
+
+  # Create the directory if it doesn't exist
+  os.makedirs(os.path.dirname(PATH), exist_ok=True)
+
+  for epoch in range(start_epoch, start_epoch + epochs):
+    total_training_loss = 0
+    for batch in training_loader:
+      input_ids = batch['input_ids'].to(device)
+      labels = batch['labels'].to(device)
+
+      #Create attention mask
+      attention_mask = (input_ids != pad_token).to(device)
+
+      outputs = model(input_ids=input_ids, labels=labels, attention_mask=attention_mask)
+      loss = outputs.loss
+
+      optimizer.zero_grad()
+      loss.backward()
+      optimizer.step()
+
+      total_training_loss += loss.item()
+
+    avg_training_loss = total_training_loss / len(training_loader)
+
+
+
+    all_preds =[]
+    all_labels = []
+
+    model.eval()
+
+    with torch.no_grad():
+      total_loss = 0
+      for batch in tqdm(testing_loader):
+        input_ids = batch['input_ids'].to(device)
+        labels = batch['labels'].to(device)
+        attention_mask = (input_ids != pad_token).to(device)
+
+        outputs = model(input_ids=input_ids, labels=labels, attention_mask=attention_mask) # Pass labels here
+        predictions = torch.argmax(outputs.logits,dim = -1)
+        loss = outputs.loss
+
+        for pred, label in zip(predictions, labels):
+            pred = pred.cpu().numpy()
+            label = label.cpu().numpy()
+
+            # Ignore padded positions (where label == -100)
+            mask = label != -100
+            all_preds.extend(pred[mask])
+            all_labels.extend(label[mask])
+
+        total_loss += loss.item()
+    # Compute accuracy and loss
+    correct = sum(p == l for p, l in zip(all_preds, all_labels))
+    total = len(all_labels)
+    acc = correct / total * 100
+    avg_testing_loss = total_loss/len(testing_loader)
+
+    #Save state_dict
+    torch.save({
+    'epoch': epoch,
+    'model_state_dict': model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    }, PATH)
+
+
+
+    print(f"Evaluation Accuracy: {acc:.2f}% | Average training loss: {avg_training_loss} | Average testing loss: {avg_testing_loss}")
+
+  model.train()
+```
 
