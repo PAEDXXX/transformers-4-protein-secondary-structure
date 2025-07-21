@@ -196,10 +196,10 @@ model = AutoModelForTokenClassification.from_pretrained(
 ```
 
 We are going to break down the training loop into four simple steps. Many deeplearning models, whether they be simple neural netowrks or transformer, will go through some form of this training loop. 
-1. Foward pass: The training data is pushed throught the transformer and the transformer outputs a prediction based upon its initial settings.
-2. Calculating loss: The transformer finds the differnece between the initial prediction and the expected output.
-3. Back propagation: The loss is used to find which settings and how much the settings need to be adjusted so that the next output is closer to the expected value and the loss decreases.
-4. Gardient Descent: These findings as applied to the transformer and it is now updated and ready for the next batch.
+1. **Foward pass:** The training data is pushed throught the transformer and the transformer outputs a prediction based upon its initial settings.
+2. **Calculating loss:** The transformer finds the differnece between the initial prediction and the expected output.
+3. **Back propagation:** The loss is used to find which settings and how much the settings need to be adjusted so that the next output is closer to the expected value and the loss decreases.
+4. **Gardient Descent:** These findings as applied to the transformer and it is now updated and ready for the next batch.
 One training loop is finished once all the batches in our dataset have been run through the transformer at least once. After each epoch the transformer will be evaluated using the testing dataset we created before. As the number of epochs progresses, we should see the training loss decrease and the evaluation accuracy (or test score) increase. This will ensure us that the transformer is being able to learn using the dataset and making increasingly accurate predictions.
 ```python
 #Training Loop
