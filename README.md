@@ -303,3 +303,38 @@ def train(model, training_loader, testing_loader, optimizer, start_epoch=0, epoc
   model.train()
 ```
 
+This final cell is where we tie everything together. Using the training loop function we defined, we insert our model, dataset, and the number of epochs we want to train for. Since I am running this through Google Colab and my runtime session is suceptible to interuptions, I am creating a checkpoint which saves the improved transformer settings up to that epoch. This allows me to resume training from that point, preventing me from having to start over. 
+```python
+from google.colab import drive
+import os
+import torch
+
+#Mount Google Drive
+drive.mount('/content/drive')
+
+#Define Save Path
+PATH = '/content/drive/MyDrive/ProtBERT_for_ss/checkpoint.pt'
+os.makedirs(os.path.dirname(PATH), exist_ok=True)
+
+#Load Checkpoint
+start_epoch = 0
+if os.path.exists(PATH):
+    checkpoint = torch.load(PATH, map_location=device)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    start_epoch = checkpoint['epoch'] + 1
+    print(f"Resuming training from epoch {start_epoch}")
+else:
+    print("No checkpoint found — starting from scratch.")
+
+#Train Model
+num_additional_epochs = 1
+train(model,
+      training_loader=training_loader,
+      testing_loader=testing_loader,
+      optimizer=optimizer,
+      start_epoch=start_epoch,
+      epochs=num_additional_epochs)
+```
+
+**Results**
