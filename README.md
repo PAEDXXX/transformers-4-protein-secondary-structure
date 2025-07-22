@@ -76,6 +76,8 @@ newer_df = newer_df.reset_index(drop = True)
 newer_df.to_parquet('/content/drive/MyDrive/kaggleDS')
 ```
 
+**Tokenization**
+
 The next step is tokenization or mapping our characters to numbers. To find all unique characters that may appear in our amino acid sequences, we concatenate all sequences and remove repeat characters. This leaves us with a list of characters representing our amino acid alphabet (or all characters that may appear in a sequence). From there we create a look up table that maps each letter in the alphabet to a unique number.
 ```python
 #Loading curated Kaggle dataset
@@ -119,6 +121,8 @@ df['encoded_ss_seqs'] = df['sst8'].apply(lambda seq: [letter_to_indx[letter] for
 new_df = df
 new_df.to_parquet('/content/drive/MyDrive/kaggleDS')
 ```
+
+**DataLoader**
 
 Now that our dataset has been narrowed down and prepared for the transformer we need to discuss how to feed it in. As I mentioned before, PyTorch is a python library that provides us with the functions and tools we need to interact with and manipulate deep learning models. Pytorch has a tool called the DataLoader which enables us to easily feed the transformer. Imagine the dataset as a steak. Through tokenization we cooked and prepared it. DataLoader cuts the steak into pieces or batches, and feeds the transformer. 
 
@@ -170,6 +174,8 @@ def collate_fn(batch):
           'labels' : padded_input_labels}
 ```
 
+**Training and Testing Data**
+
 In practice we are actually going to use two DataLoaders. One for training and another for testing. When evaluating the efficacy of a transformer you want to test it on sequences that are different from the training data. While they are expected to have similar pattern, the transformer will not be testing on a sequence that it has already seen. This ensures that it has actually gained some understanding and can apply it. This is why we split our dataset into training and testing data. In this scenario we will split our dataset into 90 percent training and 10 percent testing. Lastly we will turn each dataset into indivdual classes and then apply the DataLoader upon them.
 ```python
 #Split into training and testing data
@@ -194,6 +200,8 @@ model = AutoModelForTokenClassification.from_pretrained(
     num_labels=len(unique_characters),
 )
 ```
+
+**Training Loop**
 
 We are going to break down the training loop into four simple steps. Many deeplearning models, whether they be simple neural netowrks or transformer, will go through some form of this training loop. 
 1. **Foward pass:** The training data is pushed throught the transformer and the transformer outputs a prediction based upon its initial settings.
