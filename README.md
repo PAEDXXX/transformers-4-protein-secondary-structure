@@ -338,3 +338,4 @@ train(model,
 ```
 
 **Results**
+After running the transformer for 14 epochs the evaluation accuracy plateued and the loss stopped decreasing. Our final evaluation accuracy was 97 percent and our final training loss was 0.093. 
