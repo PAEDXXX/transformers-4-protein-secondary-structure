@@ -3,15 +3,26 @@
 **Problem:**
 Given an amino acid sequence, find a reliable way to predict the corresponding secondary structure sequence. 
 
+**Project Overview:**
+This project leverages the capabilities of the transformer model to predict the secondary structure of proteins given and amino acid sequence. The model uses an 8 class labeling system to assign each residue a secondary structure.
+
+**Results:**
+- Model: ProtBERT (Rostlab/prot_bert)
+- Task: Protein secondary structure prediction
+- Dataset: Curated protein sequence/secondary-structure dataset
+- Classification: 8 secondary structure classes
+- Evaluation accuracy: 97%
+- Training: 14 epochs using PyTorch and AdamW
+
 **Biological Relevance**
 
-Let's begin this discussion with the understanding that amino acids are the building blocks of proteins. One of the most fundamental laws of biology is that structure determines function. At the molecular and cellular level, the structure of proteins dictates their capabilities. Let's take hemoglobin for example. Hemoglobin is an oxygen distributing protein complex that is essential to human life. Hemoglobin's ability to distribute oxygen is thanks to its structure. Its structure is a consequence of the arrangement of amino acids that were used to build the protein. In this project we are zooming into protein structure and looking at what biologists call the secondary structure. Secondary structures are constructed with regards to how local amino acids interact with each other. A few examples include helical, coil, and sheet like structures. Together these secondary structures come together to build increasing levels of protein structure that eventually lead to the construction of the whole protein.
+Let's begin with the understanding that amino acids are the building blocks of proteins. The order in which the amino acids are linked together influences the protein's final structure. Structure then dictates the proteins capabilities. Hemoglobin for example, is an oxygen distributing protein complex essential to life. Hemoglobin is only able to carry and distribute oxygen due to its structure. Its structure is a consequence of the arrangement of amino acids that were used to build the protein. In this project we are looking at what biologists call the secondary structure. Secondary structures are constructed with regards to how local amino acids interact with each other. A few examples include helical, coil, and sheet like structures. Together these secondary structures come together to build increasing levels of protein structure that eventually lead to the construction of the whole protein.
 
 ![My Diagram](img-p-ss.png)
 
 **Why Transformers?**
 
-This problem requires us to understand the intricate relationships between individual amino acid residues and how they impact secondary structure. We are looking for patterns within a protein's amino acid sequence that gives us an improved chance of predicting the secondary structure. We are looking for a piece of software that can analyze sequences and pick out patterns. Thankfully, neural networks excel at tasks like this. A typical software program gives the computer a finite set of instructions. The greater variablility within the system, the harder it becomes to write a fitting program. To predict the behavior of complex systems like protein folding it is more efficient to use a neural network which has the flexibility of understanding systems with many variables.
+This problem requires us to understand the intricate relationships between individual amino acid residues and how they impact secondary structure. We are looking for patterns within a protein's amino acid sequence that gives us an improved chance of predicting the secondary structure. Thankfully, neural networks excel at tasks like this. A typical software program gives the computer a finite set of instructions. The greater variablility within the system, the harder it becomes to write a fitting program. To predict the behavior of complex systems like protein folding it is more efficient to use a neural network which has the flexibility of understanding systems with many variables.
 
 **What are Transformers?**
 
