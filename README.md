@@ -1,7 +1,7 @@
 # An Introduction to Transformers in Biology
 
 **Problem:**
-Given an amino acid sequence, find a way to reliably predict the corresponding secondary structure sequence. 
+Given an amino acid sequence, find a reliable way to predict the corresponding secondary structure sequence. 
 
 **Biological Relevance**
 
